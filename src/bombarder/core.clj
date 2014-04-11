@@ -14,6 +14,7 @@
     (n/write client "NAME Kjeppjagaren")
     (while (true? disconnect?) 
       (let [msg (n/read-from client)
-            data (json/read-str msg)]
+            data (json/read-str msg :key-fn keyword)]
         (println data)
+        (println (:type data))
         (n/write client (rand-nth moves))))))
