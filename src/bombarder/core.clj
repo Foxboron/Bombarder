@@ -5,7 +5,7 @@
 
 
 
-(def moves ["LEFT" "RIGHT" "DOWN" "UP" "BOMB" "SAY LOL"])
+(def moves ["LEFT" "RIGHT" "DOWN" "UP" "BOMB"])
 
 (defn -main []
   (let [client (n/connect "localhost" 54321)
