@@ -45,8 +45,12 @@
     (if (empty? (:bombs this))
       true
       false))
+
   (will-i-blow? [this]
-    (ai/bomb-path this)))
+     (let [bomb-paths (ai/bomb-path this)]
+       (if (nil? (some #{(player-pos this)} bomb-paths))
+         false
+         true))))
 
 (defn defmap [aimap]
   (map->BombMap aimap))

@@ -12,9 +12,10 @@
 (defn get-direction [cord pos]
   (let [c-x (first pos)
         c-y (second pos)]
-    (take 8
-        (iterate
-          (fn [[x y]] [(+' c-x x) (+' c-y y)]) cord))))
+    (take 2
+        (drop 1
+              (iterate
+                (fn [[x y]] [(+' c-x x) (+' c-y y)]) cord)))))
 
 
 
