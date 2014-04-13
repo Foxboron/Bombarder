@@ -15,7 +15,7 @@
     (take 2
         (drop 1
               (iterate
-                (fn [[x y]] [(+' c-x x) (+' c-y y)]) cord)))))
+                (fn [[x y]] [(+ c-x x) (+ c-y y)]) cord)))))
 
 
 
@@ -39,5 +39,4 @@
   (let [bombs (map #(vector (:x %) (:y %)) (:bombs player))
         field (:map player)]
     (mapcat #(mapcat (fn [i] (get-direction % i)) pos) bombs)))
-
 
