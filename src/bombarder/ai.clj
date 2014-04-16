@@ -12,12 +12,6 @@
                      "+###.##+" 
                      "++++++++"]})
 
-
-(defn pathfinding [cords]
-  "Wat algo?"
-  ["bomb" "bomb"])
-
-
 (defn get-direction [cord pos]
   (let [c-x (first pos)
         c-y (second pos)]
@@ -30,9 +24,9 @@
 
 ;; Typing it out as i am a moron
 ;;
-;;          0,-1
+;; -1,-1    0,-1    1,-1
 ;; -1, 0    0, 0    1, 0
-;;          0, 1
+;; -1,1     0, 1    1, 1
 ;;
 
 (def pos [[0 1] ;; Up
@@ -63,17 +57,25 @@
     [f g h]))
 
 
+
+
 (defn edges [map width height closed [x y]]
   (for [tx (range (- x 1) (+ x 2)) 
         ty (range (- y 1) (+ y 2))
+        :let [no-go {[(+ x 1) (+ y 1)]
+                     [(+ x 1) (- y 1)] 
+                     [(- x 1) (+ y 1)] 
+                     [(- x 1) (- y 1)]}]
         :when (and (>= tx 0)
                    (>= ty 0)
                    (<= tx width)
                    (<= ty height)
                    (not= [x y] [tx ty])
                    (nil? (some  #{\+ \#} (str (nth (nth map ty) tx))))
+                   (not (contains? no-go [tx ty]))
                    (not (contains? closed [tx ty])))]
-    [tx ty]))
+    (do (println (not (contains? no-go [tx ty])))
+      [tx ty])))
 
 
 
@@ -89,7 +91,7 @@
 
 
 
-(defn search 
+(defn pathfinding 
   ([map start end]
      (let [[sx sy] start
            [ex ey] end
@@ -108,7 +110,7 @@
            height (-> map count dec)]
        (when (and (not= (nth (nth map sy) sx) 1)
                   (not= (nth (nth map ey) ex) 1))
-         (search map width height open closed start end))))
+         (pathfinding map width height open closed start end))))
 
   ([map width height open closed start end]
      (if-let [[coord [_ _ _ parent]] (peek open)]
@@ -127,3 +129,6 @@
                      (pop open) edges)]
            (recur map width height open closed start end))
          (path end parent closed)))))
+
+
+(println (pathfinding (:map test-map) [4 1] [4 6]))
