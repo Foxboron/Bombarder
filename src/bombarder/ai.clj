@@ -44,7 +44,10 @@
     (mapcat #(mapcat (fn [i] (get-direction % i)) pos) bombs)))
 
 
-
+(defn invalid-positions [this]
+  (let [bombs (map #(vector (:x %) (:y %)) (:bombs this))
+        players (map #(vector (:x %) (:y %)) (:players this))]
+    (concat bombs players)))
 
 
 (defn manhattan-distance [[x1 y1] [x2 y2]]
@@ -56,10 +59,7 @@
         f (+ g h)] 
     [f g h]))
 
-
-
-
-(defn edges [map width height closed [x y]]
+(defn edges [map invalid width height closed [x y]]
   (for [tx (range (- x 1) (+ x 2)) 
         ty (range (- y 1) (+ y 2))
         :let [no-go {[(+ x 1) (+ y 1)]
@@ -72,9 +72,10 @@
                    (<= ty height)
                    (not= [x y] [tx ty])
                    (nil? (some  #{\+ \#} (str (nth (nth map ty) tx))))
+                   (nil? (some (set invalid) [tx ty]))
                    (not (contains? no-go [tx ty]))
                    (not (contains? closed [tx ty])))]
-    (do (println (not (contains? no-go [tx ty])))
+    (do (println invalid)
       [tx ty])))
 
 
@@ -92,9 +93,11 @@
 
 
 (defn pathfinding 
-  ([map start end]
+  ([mapmap start end]
      (let [[sx sy] start
            [ex ey] end
+           map (:map mapmap)
+           invalid-pos (invalid-positions mapmap)
            open (priority-map-by
                  (fn [x y]
                    (if (= x y)
@@ -110,13 +113,13 @@
            height (-> map count dec)]
        (when (and (not= (nth (nth map sy) sx) 1)
                   (not= (nth (nth map ey) ex) 1))
-         (pathfinding map width height open closed start end))))
+         (pathfinding map invalid-pos width height open closed start end))))
 
-  ([map width height open closed start end]
+  ([map invalid width height open closed start end]
      (if-let [[coord [_ _ _ parent]] (peek open)]
        (if-not (= coord end)
          (let [closed (assoc closed coord parent)
-               edges (edges map width height closed coord)
+               edges (edges map invalid width height closed coord)
                open (reduce
                      (fn [open edge]
                        (if (not (contains? open edge))
@@ -127,8 +130,8 @@
                              (assoc open edge (conj [nf ng nh] coord))
                              open))))
                      (pop open) edges)]
-           (recur map width height open closed start end))
+           (recur map invalid width height open closed start end))
          (path end parent closed)))))
 
 
-(println (pathfinding (:map test-map) [4 1] [4 6]))
+(println (pathfinding test-map [4 1] [4 6]))
