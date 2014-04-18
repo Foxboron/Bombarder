@@ -57,8 +57,13 @@
          false
          true))))
 
+
 (defn defmap [aimap]
   (map->BombMap aimap))
+
+
+(def testmap (defmap test-map))
+
 
 (defn remove-unmoveables [m cords]
   "Removed objects we can't go through"
@@ -97,5 +102,4 @@
 (def testmap (defmap test-map))
 
 (println (safe-spots testmap [2 1]))
-
 

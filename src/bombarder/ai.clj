@@ -36,7 +36,6 @@
           ])
 
 
-
 (defn bomb-path [player cords]
   "Will we get killed?"
   (let [bombs  (vector cords)
@@ -133,6 +132,5 @@
                      (pop open) edges)]
            (recur map invalid width height open closed start end))
          (path end parent closed)))))
-
 
 ;(println (pathfinding test-map [1 1] [6 5]))
